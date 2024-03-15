@@ -1,7 +1,7 @@
 #include <stdio.h>
 typedef struct
 {
-    char Nome[16];
+    char Nome[11];
     float Preco;
     unsigned int Quantidade;
 } Produto;
@@ -14,23 +14,27 @@ int main()
         {{"Batata\0", 1.2, 0},{"Tomate\0", 9.8, 0},{"Alface\0", 1.75, 0},{"Pepino\0", 6.3, 0}},
         {{"Banana\0", 4.5, 0},{"Maca\0", 12, 0},{"Laranja\0", 3, 0},{"Poncan\0", 4, 0}}
     };
-    printf("MERCADO\n1-Padaria\n2-Legumes\n3-Frutas\n");
-    scanf("%i", &Setor);
-    if(--Setor > 2){Setor = 2;}
-    printf("%s\n", Setor ? (Setor==1 ? "Legumes" : "Frutas") : "Padaria");
     while(1)
-    {
-        for(int i = 0; i < 4; ++i)
+    {    
+        printf("MERCADO\n1-Padaria\n2-Legumes\n3-Frutas\n0-Sair\n");
+        scanf("%i", &Setor);
+        if(!Setor){break;}
+        if(--Setor > 2){Setor = 2;}
+        printf("%s\n", Setor ? (Setor==1 ? "Legumes" : "Frutas") : "Padaria");
+        while(1)
         {
-            printf("%i- %s %.2f reais\n", i+1, Catalogo[Setor][i].Nome, Catalogo[Setor][i].Preco);
+            for(int i = 0; i < 4; ++i)
+            {
+                printf("%i- %s %.2f reais\n", i+1, Catalogo[Setor][i].Nome, Catalogo[Setor][i].Preco);
+            }
+            printf("0-Voltar\n");
+            scanf("%i", &Prod);
+            if(!Prod){break;}
+            if(--Prod > 3){Prod = 3;}
+            printf("Quantidade: ");
+            scanf("%i", &TempQtde);
+            Catalogo[Setor][Prod].Quantidade += TempQtde;
         }
-        printf("0-Sair\n");
-        scanf("%i", &Prod);
-        if(!Prod){break;}
-        if(--Prod > 3){Prod = 3;}
-        printf("Quantidade: ");
-        scanf("%i", &TempQtde);
-        Catalogo[Setor][Prod].Quantidade += TempQtde;
     }
     float Total = 0;
     FILE * File = fopen("./Nota.txt", "w");
