@@ -4,7 +4,11 @@ x:
 .text
 .globl main
 main:
-    pushl	$7
+    pushl	$-11
+    call    _GetStdHandle@4
+    pushl	$0
+    pushl	$0
+    pushl   $7
     pushl	$x
-    call    _printf
-    addl    $8, %esp
+    pushl	%eax
+    call    _WriteConsoleA@20
