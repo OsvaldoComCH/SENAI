@@ -17,6 +17,14 @@ int8** createPiram(int b){
      }
     return piramide;
 }
+int8 ** createEmptyPiram(int b)
+{
+    int8 **piramide = (int8**) malloc(b * sizeof(int8*));
+    for(int8 i = 0; i < b; i++){
+        piramide[i] = (int8*) malloc( (i+1) * sizeof(int8));
+    }
+    return piramide;
+}
 //PRINTAR PIRAMIDE
 void printPiram(int8 **pyramMove, int8 **pyram, int8 base, int8 height, int8 choice){
     switch (choice){
@@ -62,19 +70,12 @@ int8* binary(int i, int8 height){
     return bin;
 }
 //COPIAR PIRAMIDE ORIGINAL
-int8** copyPiram(int8 **pyramOrig,int8 b){
-    int8 base = b;
-    int8 height = b;
-    int8 **piramCopia = (int8**) malloc(height  * sizeof(int8*));
-    for(int8 i = 0; i < height; i++){
-        piramCopia[i] = (int8*) malloc(base * sizeof(int8));
-    }
-    for(int8 lin = 0; lin < height; lin++){
-        for(int8 col = 0; col < base; col++){
-            piramCopia[lin][col] = pyramOrig[lin][col];
+void copyPiram(int8 **pyramOrig, int8 **pyramDest, int8 b){
+    for(int8 lin = 0; lin < b; lin++){
+        for(int8 col = 0; col < b; col++){
+            pyramDest[lin][col] = pyramOrig[lin][col];
         }
     }
-    return piramCopia;
 }
 void freePiram(int8 **piram, int8 height){
     for(int8 i = 0; i < height; i++){
@@ -86,7 +87,7 @@ void freePiram(int8 **piram, int8 height){
 int main() {
     while(1){
         srand(time(NULL));
-        int8 b, **pyraMove, *bin;
+        int8 b;
         int score=0;
         long long times=0;
         char see;
@@ -97,20 +98,22 @@ int main() {
         } while(b<=0);
         int8 height = b, base = b;
         int8 **pyramid = createPiram(b);
-        int8 **bestWay = copyPiram(pyramid,b);
+        int8 **bestWay = createEmptyPiram(b);
+        int8 **pyraMove = createEmptyPiram(b);
+        copyPiram(pyramid, bestWay, b);
         printf("==================================================================================================================================================================================\n\n");
         printPiram(0, pyramid, base, height, 1);
         printf("\n\n\n==================================================================================================================================================================================");
         // Sleep(5000);
         //CALCULAR CAMINHOS POSSIVEIS
         for(int8 i = 0; i < height; i++){
-            times += pow(2,i); 
+            times += 1 << i; 
         }
         for(int v = 0; v <= times; v+=2){
             int result = 0;
             int walkPyram = 0;
-            pyraMove = copyPiram(pyramid,b);
-            bin = binary(v,height);
+            copyPiram(pyramid, pyraMove, b);
+            int8 * bin = binary(v,height);
 
             for(int lin = 0; lin < height; lin++){
                 result += pyramid[lin][walkPyram];
@@ -119,9 +122,10 @@ int main() {
                     walkPyram+=1;
                 }
             }
+            free(bin);
             if(result>score){
                 score = result;
-                bestWay = copyPiram(pyraMove,b);
+                copyPiram(pyraMove, bestWay, b);
             }
             if(b<=10){
                 printf("\033[2J\033[H");
@@ -136,27 +140,12 @@ int main() {
         printf("\n\n\n==========================================================================================\n||\t\t\t\t\tMELHOR CAMINHO\t\t\t\t\t||\n==========================================================================================\n\n");
         printPiram(bestWay, pyramid , base, height, 2);
         printf("\n\n\n==========================================\n||\tPONTUACAO:\t%d\t\t||\n==========================================",score);
-      printf("\n\n\ntimes: %lld",times/2-1);
-        // freePiram(pyramid,height);
-        // freePiram(pyraMove,height);
-        // freePiram(bestWay,height);
-        
-        for(int8 i = 0; i < height; i++){
-            free(pyramid[i]);
-        }
-        free(pyramid);
+        printf("\n\n\ntimes: %lld",times/2-1);
 
-        for(int8 i = 0; i < height; i++){
-            free(pyraMove[i]);
-        }
-        free(pyraMove);
+        freePiram(pyramid,height);
+        freePiram(pyraMove,height);
+        freePiram(bestWay,height);
 
-        for(int8 i = 0; i < height; i++){
-            free(bestWay[i]);
-        }
-        free(bestWay);
-
-        free(bin);
     }
     return 0;
 }
