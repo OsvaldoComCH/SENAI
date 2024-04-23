@@ -10,7 +10,8 @@ x:
 .globl main
 .globl printnumber
 printnumber:
-	test	4(%esp), 4(%esp)
+	movl	4(%esp), %eax
+	test	%eax, %eax
 	jz		pn0
 	pushl	$l1
 	jmp		pn1
