@@ -1,6 +1,11 @@
 .section .rdata
 l1:
 	.asciz "%i\n"
+l2:
+	.asciz "%i "
+.section .data
+x:
+	.long 10
 .section .text
 .globl main
 main:
@@ -12,17 +17,17 @@ main:
 	pushl	%esi
 	pushl	$l1
 	call	_printf
-	cmp		%ebx, $5
+	cmp		%ebx, x
 	je		finish
 fib:
 	movl	%edi, 4(%esp)
 	call	_printf
-	cmp		%ebx, $5
+	cmp		%ebx, x
 	je		finish
 	addl	%edi, %esi
 	movl	%esi, 4(%esp)
 	call	_printf
-	cmp		%ebx, $5
+	cmp		%ebx, x
 	je		finish
 	addl	%esi, %edi
 	jmp		fib
