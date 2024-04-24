@@ -1,11 +1,6 @@
 .section .rdata
 l1:
-	.ascii "%i\n"
-l2:
-	.ascii "%i "
-.section .data
-x:
-	.long 0
+	.asciz "%i\n"
 .section .text
 .globl main
 main:
