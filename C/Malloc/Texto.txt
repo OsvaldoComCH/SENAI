@@ -1,0 +1,27 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <math.h>
+// #include <windows.h>
+//CRIAR PIRAMIDE
+typedef signed char int8;//inteiro de 1 byte
+int8** createPiram(int b){
+    int8 **piramide = (int8**) malloc(b * sizeof(int8*));
+    for(int8 i = 0; i < b; i++){
+        piramide[i] = (int8*) malloc( (i+1) * sizeof(int8));
+    }
+     for(int8 l=0;l<b;l++){
+       for(int8 c=0;c<=l;c++){
+            piramide[l][c] = (int8) (rand()%100)+1;
+       }
+     }
+    return piramide;
+}
+int8 ** createEmptyPiram(int b)
+{
+    int8 **piramide = (int8**) malloc(b * sizeof(int8*));
+    for(int8 i = 0; i < b; i++){
+        piramide[i] = (int8*) malloc( (i+1) * sizeof(int8));
+    }
+    return piramide;
+}
