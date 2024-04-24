@@ -17,16 +17,19 @@ main:
 	pushl	%esi
 	pushl	$l1
 	call	_printf
+	incl	%ebx
 	cmp		%ebx, x
 	je		finish
 fib:
 	movl	%edi, 4(%esp)
 	call	_printf
+	incl	%ebx
 	cmp		%ebx, x
 	je		finish
 	addl	%edi, %esi
 	movl	%esi, 4(%esp)
 	call	_printf
+	incl	%ebx
 	cmp		%ebx, x
 	je		finish
 	addl	%esi, %edi
