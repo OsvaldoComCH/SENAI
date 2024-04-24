@@ -8,20 +8,31 @@ x:
 	.long 0
 .section .text
 .globl main
-.globl printnumber
-printnumber:
-	movl	4(%esp), %eax
-	test	%eax, %eax
-	jz		pn0
-	pushl	$l1
-	jmp		pn1
-pn0:
-	pushl	$l2
-pn1:
-	call	_printf
-	addl	$4, %esp
-	ret
 main:
-	pushl	$1
-	pushl	$10
-	call	printnumber
+	pushl	%ebp
+	movl	%esp, %ebp
+	movl	$0, %ebx
+	movl	$0, %esi
+	movl	$1, %edi
+	pushl	%esi
+	pushl	$l1
+	call	_printf
+	cmp		%ebx, $5
+	je		finish
+fib:
+	movl	%edi, 4(%esp)
+	call	_printf
+	cmp		%ebx, $5
+	je		finish
+	addl	%edi, %esi
+	movl	%esi, 4(%esp)
+	call	_printf
+	cmp		%ebx, $5
+	je		finish
+	addl	%esi, %edi
+	jmp		fib
+
+finish:
+	movl	%ebp, %esp
+	popl	%ebp
+	ret
