@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
-typedef struct Funcionario
+typedef struct Pessoa
 {
     char Nome[20], Sexo, CPF[14], Cargo[50];
     float Salario;
     int DataNasc, Idade;
-} Funcionario;
+} Pessoa;
 
 int main()
 {
-    Funcionario F;
+    Pessoa F;
     printf("Nome: ");
     scanf("%s", F.Nome);
     printf("Sexo: ");
@@ -25,5 +25,6 @@ int main()
     printf("Salario: ");
     scanf("%f", &F.Salario);
 
-    printf("%s (%c): CPF: %s\n%s\nSalario: %.2f\nIdade: %i", F.Nome, F.Sexo, F.CPF, F.Cargo, F.Salario, F.Idade);
+    FILE * File = fopen("Out.txt", "w");
+    fprintf(File, "%s (%c): CPF: %s\n%s\nSalario: %.2f\nIdade: %i", F.Nome, F.Sexo, F.CPF, F.Cargo, F.Salario, F.Idade);
 }
