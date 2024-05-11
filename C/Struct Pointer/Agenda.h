@@ -6,7 +6,7 @@
 typedef struct ENDERECO
 {
     int CEP;
-    unsigned short Numero;
+    int Numero;
     char Rua[30];
     char Complemento[16];
     char Bairro[20];
@@ -17,15 +17,15 @@ typedef struct ENDERECO
 
 typedef struct ANIVERSARIO
 {
-    unsigned char Dia;
-    unsigned char Mes;
-    unsigned short Ano;
+    int Dia;
+    int Mes;
+    int Ano;
 }ANIVERSARIO;
 
 typedef struct TELEFONE
 {
     int Numero;
-    unsigned char DDD;
+    int DDD;
 }TELEFONE;
 
 
@@ -41,40 +41,35 @@ typedef struct CONTATO
 
 typedef struct AGENDA
 {
-    CONTATO * Contatos;
     int Size;
+    CONTATO * Contatos;
 } AGENDA;
 
 static inline void PrintDados(const CONTATO * Contato)
 {
-    printf("%s (%s):\n(%i) %i", 
+    printf("%s (%s):\n(%i) %i\n", 
     Contato->Nome, Contato->Email, Contato->Telefone.DDD, Contato->Telefone.Numero);
 }
 
 void CriarAgenda(AGENDA * Agenda)
 {
     Agenda->Size = 0;
-    Agenda->Contatos = malloc(1);
+    Agenda->Contatos = (CONTATO *) malloc(sizeof(CONTATO));
 }
 
-int CompAlfabetica(const char * S1, const char * S2)
+void DeletarAgenda(AGENDA * Agenda)
 {
-    for(int i = 0; i < 20; ++i)
-    {
-        if((S1[i] | 0x20) == (S2[i] | 0x20)){continue;}
-        return (S1[i] | 0x20) - (S2[i] | 0x20);
-    }
-    return 0;
+    free(Agenda->Contatos);
 }
 
 void Sort(CONTATO * Contatos, int Start, int End)
 {
     if(Start >= End){return;}
     int i = (Start);
-  
+
     for(int j = Start; j <= End; ++j)
     {
-        if(CompAlfabetica(Contatos[j].Nome, Contatos[End].Nome) < 0)
+        if(strcmp(Contatos[j].Nome, Contatos[End].Nome) < 0)
         {
             ++i;
             CONTATO Temp = Contatos[i];
@@ -93,26 +88,57 @@ void Sort(CONTATO * Contatos, int Start, int End)
 
 void AddContato(AGENDA * Agenda, const CONTATO * Contato)
 {
-    Agenda->Contatos = (CONTATO *) realloc(Agenda->Contatos, sizeof(CONTATO)*Agenda->Size+1);
+    /*if(Agenda->Size == 0)
+    {
+        Agenda->Contatos = (CONTATO *) malloc(sizeof(CONTATO));
+    }else
+    {*/
+        Agenda->Contatos = (CONTATO *) realloc(Agenda->Contatos, sizeof(CONTATO)*(Agenda->Size+2));
+    //}
     Agenda->Contatos[Agenda->Size] = *Contato;
     Sort(Agenda->Contatos, 0, Agenda->Size);
     ++Agenda->Size;
 }
 
-void DelContato(AGENDA * Agenda, int DDD, int Telefone)
+void DelContato(AGENDA * Agenda, int DDD, int Numero)
 {
-    int index = 0;
-    --Agenda->Size;
-    for(; index < Agenda->Size; ++index)
+    int i = 0;
+    char c = '_';
+    for(; i < Agenda->Size; ++i)
     {
-        Agenda->Contatos[index] = Agenda->Contatos[index+1];
+        if(Agenda->Contatos[i].Telefone.DDD == DDD && Agenda->Contatos[i].Telefone.Numero == Numero)
+        {
+            PrintDados(&Agenda->Contatos[i]);
+            printf("Deseja deletar este contato (s/n)? ");
+            scanf(" %c", &c);
+            if(c == 's')
+            {
+                break;
+            }else
+            {
+                continue;
+            }
+        }
+    }
+    if(c != 's')
+    {
+        if(c == '_')
+        {
+            printf("Contato não encontrado");
+        }
+        return;
+    }
+    --Agenda->Size;
+    for(; i < Agenda->Size; ++i)
+    {
+        Agenda->Contatos[i] = Agenda->Contatos[i+1];
     }
     Agenda->Contatos = (CONTATO *) realloc(Agenda->Contatos, sizeof(CONTATO)*Agenda->Size);
 }
 
 static inline void PrintDadosFull(const CONTATO * Contato)
 {
-    printf("%s (%s):\n(%i) %i\tAniversario: %i/%i/%i\n%s, %i - %s, %s (%s)\n%s", 
+    printf("%s (%s):\n(%i) %i\tAniversario: %i/%i/%i\n%s, %i - %s, %s (%s)\n%s\n", 
     Contato->Nome, Contato->Email, Contato->Telefone.DDD, Contato->Telefone.Numero, Contato->Aniversario.Dia,
     Contato->Aniversario.Mes, Contato->Aniversario.Ano, Contato->Endereco.Rua, Contato->Endereco.Numero,
     Contato->Endereco.Bairro, Contato->Endereco.Cidade, Contato->Endereco.Estado, Contato->Observacao);
@@ -122,7 +148,7 @@ void PrintNome(const AGENDA * Agenda, const char * str)
 {
     for(int i = 0; i < Agenda->Size; ++i)
     {
-        if(strcmp(str, Agenda->Contatos[i].Nome))
+        if(strcmp(str, Agenda->Contatos[i].Nome) == 0)
         {
             PrintDados(&Agenda->Contatos[i]);
         }
@@ -145,6 +171,17 @@ void PrintDiaAniversario(const AGENDA * Agenda, int Mes, int Dia)
     for(int i = 0; i < Agenda->Size; ++i)
     {
         if(Mes == Agenda->Contatos[i].Aniversario.Mes && Dia == Agenda->Contatos[i].Aniversario.Dia)
+        {
+            PrintDadosFull(&Agenda->Contatos[i]);
+        }
+    }
+}
+
+void PrintTelefone(const AGENDA * Agenda, int DDD, int Numero)
+{
+    for(int i = 0; i < Agenda->Size; ++i)
+    {
+        if(DDD == Agenda->Contatos[i].Telefone.DDD && Numero == Agenda->Contatos[i].Telefone.Numero)
         {
             PrintDadosFull(&Agenda->Contatos[i]);
         }
