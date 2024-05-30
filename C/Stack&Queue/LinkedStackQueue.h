@@ -2,86 +2,89 @@
 #define LINKED_STACK_QUEUE
 #include <stdlib.h>
 
-typedef struct SQ
+typedef struct SQNode
 {
     int Value;
-    struct SQ * Next;
-} LStack, LQueue;
+    struct SQNode * Next;
+} SQNode;
+
+typedef struct LStack
+{
+    SQNode * Head;
+} LStack;
+
+typedef struct LQueue
+{
+    SQNode * Head, * Tail;
+} LQueue;
 
 void CreateLStack(LStack * Stack)
 {
-    Stack = (LStack *) malloc(sizeof(LStack));
-    Stack->Next = NULL;
+    Stack->Head = NULL;
 }
 
 void Push(LStack * Stack, int Value)
 {
-    if(Stack->Next)
-    {
-        LStack * S = Stack;
-        Stack = (LStack *) malloc(sizeof(LStack));
-        Stack->Next = S;
-    }
-    Stack->Value = Value;
+    SQNode * S = (SQNode *) malloc(sizeof(SQNode));
+    S->Next = Stack->Head;
+    S->Value = Value;
+    Stack->Head = S;
 }
 
 int Pop(LStack * Stack)
 {
-    LStack * S = Stack;
+    SQNode * S = Stack->Head;
     int Value = S->Value;
-    Stack = Stack->Next;
+    Stack->Head = Stack->Head->Next;
     free(S);
     return Value;
 }
 
 void DeleteLStack(LStack * Stack)
 {
-    while(Stack)
+    while(Stack->Head != NULL)
     {
-        LStack * S = Stack->Next;
-        free(Stack);
-        Stack = S;
+        Pop(Stack);
     }
 }
 
 void CreateLQueue(LQueue * Queue)
 {
-    Queue = (LQueue *) malloc(sizeof(LQueue));
-    Queue->Next = NULL;
+    Queue->Head = NULL;
+    Queue->Tail = NULL;
 }
 
 void Enqueue(LQueue * Queue, int Value)
 {
-    if(Queue->Next)
+    SQNode * S = (SQNode *) malloc(sizeof(SQNode));
+    S->Next = 0;
+    S->Value = Value;
+    if(Queue->Head == NULL)
     {
-        LQueue * S = Queue;
-        Queue = (LQueue *) malloc(sizeof(LQueue));
-        Queue->Next = S;
+        Queue->Tail = S;
+        Queue->Head = Queue->Tail;
+    }else
+    {
+        Queue->Tail->Next = S;
+        Queue->Tail = S;
     }
-    Queue->Value = Value;
 }
 
 int Dequeue(LQueue * Queue)
 {
-    LQueue * Q = Queue, * L = Queue;
-    while(Q->Next)
-    {
-        L = Q;
-        Q = Q->Next;
-    }
-    L->Next = NULL;
-    int Value = Q->Value;
-    free(Q);
+    SQNode * S = Queue->Head;
+    int Value = S->Value;
+    Queue->Head = Queue->Head->Next;
+    free(S);
     return Value;
 }
 
 void DeleteLQueue(LQueue * Queue)
 {
-    while(Queue)
+    while(Queue->Head != NULL)
     {
-        LQueue * S = Queue->Next;
-        free(Queue);
-        Queue = S;
+        Dequeue(Queue);
     }
 }
+
 #endif
