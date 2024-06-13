@@ -3,15 +3,16 @@
 
 void BubbleSort(int * A, int Size)
 {
+    --Size;
     for(int i = 0; i < Size; ++i)
     {
-        for(int j = 0; j < Size; ++j)
+        for(int j = 0; j < Size-i; ++j)
         {
-            if(A[i] < A[j])
+            if(A[j] > A[j+1])
             {
-                A[i] = A[j] ^ A[i];
-                A[j] = A[j] ^ A[i];
-                A[i] = A[j] ^ A[i];
+                A[j+1] = A[j] ^ A[j+1];
+                A[j] = A[j] ^ A[j+1];
+                A[j+1] = A[j] ^ A[j+1];
             }
         }
     }

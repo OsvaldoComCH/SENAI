@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "MergeSort.h"
+#include "BubbleSort.h"
 #include "SelectionSort.h"
 #include "InsertionSort.h"
+#include "MergeSort.h"
+#include "QuickSort.h"
 
 int main()
 {
@@ -29,19 +31,25 @@ int main()
             scanf("%i", &A[i]);
         }
     }
-    printf("Algoritmo:\n1-Insertion\n2-Selection\n3-Merge\n");
+    printf("Algoritmo:\n1-Bubble\n2-Insertion\n3-Selection\n4-Merge\n5-Quick\n");
     scanf("%i", &x);
 
     switch(x)
     {
         case 1:
-            InsertionSort(A, Size);
+            BubbleSort(A, Size);
         break;
         case 2:
-            SelectionSort(A, Size);
+            InsertionSort(A, Size);
         break;
         case 3:
+            SelectionSort(A, Size);
+        break;
+        case 4:
             MergeSort(A, 0, Size-1);
+        break;
+        case 5:
+            QuickSort(A, 0, Size-1);
         break;
         default:
         break;
