@@ -1,0 +1,32 @@
+> Cliente
+	> IDCliente
+	> Nome
+	> Telefone
+	> Endereco
+	
+> Veiculo
+	> IDVeiculo
+	> IDCliente
+	> Marca
+	> Modelo
+	> Ano
+	> Placa
+	
+> Servico
+	> IDServico
+	> Preco
+	
+> Ordem
+	> IDOrdem
+	> IDCliente
+	> IDVeiculo
+	> DataEntrada
+	> DataSaida
+	> Status
+	> Observacao
+	
+> ItemServico
+	> IDItemServico
+	> IDServico
+	> IDOrdem
+	> Quantidade
