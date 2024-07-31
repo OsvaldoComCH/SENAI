@@ -1,3 +1,4 @@
+TABELAS:
 > Cliente
 	> IDCliente
 	> Nome
@@ -30,3 +31,16 @@
 	> IDServico
 	> IDOrdem
 	> Quantidade
+
+REQUISITOS DO SISTEMA:
+> Funcionais:
+	> Cadastrar Clientes, com Nome, Telefone, Endereço e um ou mais Veículos;
+	> Cadastrar Veículos, relacionados à um Cliente;
+	> Atualizar dados de todas as tabelas;
+	> Excluir dados de todas as tabelas;
+	> Atualizar, remover e adicionar relações entre Cliente e Veículo, sem comprometer as ordens de serviço já existentes;
+
+> Não Funcionais:
+	> Segurança do sistema e dos dados;
+	> Acessibilidade do sistema;
+	> Manual de Instruções do sistema;
