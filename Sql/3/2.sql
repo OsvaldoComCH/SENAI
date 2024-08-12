@@ -58,3 +58,26 @@ Where Clientes.Nome Like "A%";
 Select * From Livros
 Right Join Pedidos on Pedidos.Livro_id = Livros.Livro_id
 Where Pedidos.Livro_id = NULL;
+
+Select * From Clientes
+Inner Join Pedidos on Clientes.Cliente_id = Pedidos.Cliente_id
+Inner Join Livros on  Pedidos.Livro_id = Livros.Livro_id
+Order By Pedidos.Data_Pedido;
+
+Select * From Autores
+Full Join Livros;
+
+Select * From Pedidos
+Left Join Clientes on Clientes.Cliente_id = Pedidos.Cliente_id
+Left Join Livros on Pedidos.Livro_id = Livros.Livro_id;
+
+Select * From Clientes
+Right Join Pedidos on Clientes.Cliente_id = Pedidos.Cliente_id
+Right Join Livros on  Pedidos.Livro_id = Livros.Livro_id
+Order By Pedidos.Data_Pedido;
+
+Select Autores.Nome From Autores
+Inner Join Livros on Livros.Autor_id = Autores.Autor_id
+Inner Join Pedidos on Pedidos.Livro_id = Livros.Livro_id
+Inner Join Clientes on Clientes.Cliente_id = Pedidos.Cliente_id
+Where Clientes.Nome Like "A%";
