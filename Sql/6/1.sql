@@ -133,34 +133,53 @@ End;
 Deletar um veículo e suas multas associadas (com trigger)
 */
 Delimiter //
-Create Procedure DeleteVeiculo(id_veiculo int)
+Create Procedure DeleteVeiculo(veiculo_id int)
 Begin
-	delete From Multas where id_infracao = (Select id_infracao from infracoes where id_veiculo = id_veiculo);
-    Delete From Infracoes where id_veiculo = id_veiculo;
-    Delete From Veiculos where id = id_veiculo;
+	delete From Multas where infracao_id in (Select infracao_id from infracoes where veiculo_id = veiculo_id);
+    Delete From Infracoes where veiculo_id = veiculo_id;
+    Delete From Veiculos where id = veiculo_id;
 End;
 // Delimiter ;
 /*
 Inserir uma nova infração e atualizar multas associadas (com trigger)
 */
 Delimiter //
-Create Procedure InsertMulta(id_veiculo int, data date, pontos int, descricao varchar(100), gravidade Varchar(20), valor float)
+Create Procedure InsertMulta(veiculo_id int, data date, pontos int, descricao varchar(100), gravidade Varchar(20), valor float)
 Begin
-	insert into Infracoes(descricao, gravidade, data_ocorrencia, veiculo_id) values (descricao, gravidade, data, id_veiculo);
-	iNSERT INTO Multas (valor, pontos, data_aplicacao, infracao_id) VALUES (valor, pontos, data, (Select id_infracao from infracoes where id = id_veiculo));
+	insert into Infracoes(descricao, gravidade, data_ocorrencia, veiculo_id) values (descricao, gravidade, data, veiculo_id);
+	iNSERT INTO Multas (valor, pontos, data_aplicacao, infracao_id) VALUES (valor, pontos, data, (Select infracao_id from infracoes where id = veiculo_id));
 End;
 // Delimiter ;
 /*
 Atualizar pontos na carteira de um proprietário específico que levou uma multa(com trigger)
 */
 Delimiter //
-
+Create Trigger TR_UpdatePontos
+after insert
+on Multas
+for each row
+begin
+	update proprietarios set pontos_carteira = pontos_carteira + new.pontos where id = 
+    (
+		select proprietarios.id from multas
+        inner join infracoes on infracoes.id = multas.infracao_id
+        inner join veiculos on veiculos.id = infracoes.veiculo_id
+        inner join proprietarios on proprietarios.id = veiculos.id_proprietario
+        where multas.id = new.id limit 1
+	);
+end;
 // Delimiter ;
 /*
 Deletar um proprietário e seus veículos associados (com trigger)
 */
 Delimiter //
-
+Create Trigger TR_DeleteVeiculos
+before delete
+on Proprietarios
+for each row
+begin
+	delete from Veiculos where Proprietario_id = old.id;
+end;
 // Delimiter ;
 /*
 Selecionar veículos com licenciamento expirado
@@ -168,7 +187,7 @@ Selecionar veículos com licenciamento expirado
 Delimiter //
 Create Procedure SelectLicenciamento()
 Begin
-	select veiculos.* from veiculos inner join licenciamentos on licenciamentos.id_veiculo = veiculos.id where licenciamentos.data_validade < Curdate();
+	select veiculos.* from veiculos inner join licenciamentos on licenciamentos.veiculo_id = veiculos.id where licenciamentos.data_validade < Curdate();
 End;
 // Delimiter ;
 /*
@@ -177,84 +196,128 @@ Selecionar veículos que possuem multas graves
 Delimiter //
 Create Procedure SelectMultasGraves()
 Begin
-	select veiculos.* from veiculos inner join infracoes on infracoes.id_veiculo = veiculos.id where infracoes.gravidade = "Grave";
+	select veiculos.* from veiculos inner join infracoes on infracoes.veiculo_id = veiculos.id where infracoes.gravidade = "Grave";
 End;
 // Delimiter ;
 /*
 Selecionar veículos acima de 2021 
 */
 Delimiter //
-Create Procedure Select2021()
+Create Procedure SelectVeiculos2021()
 Begin
-	select veiculos.* from veiculos where infracoes.gravidade = "Grave";
+	select veiculos.* from veiculos where ano > 2021;
 End;
 // Delimiter ;
 /*
 Selecionar multas de veículos abaixo de 2020
 */
 Delimiter //
-
+Create Procedure SelectMultas2020()
+Begin
+	select Multas.* from veiculos
+	inner join infracoes on infracoes.veiculo_id = veiculos.id
+	inner join multas on multas.infracao_id = infracoes.id
+    where veiculos.ano < 2020;
+End;
 // Delimiter ;
 /*
 Selecionar todos os veículos com multas pendentes
 */
 Delimiter //
-
+Create Procedure SelectMultasPendentes()
+Begin
+	select Veiculos.*, multas.* from veiculos
+	inner join infracoes on infracoes.veiculo_id = veiculos.id
+	inner join multas on multas.infracao_id = infracoes.id;
+End;
 // Delimiter ;
 /*
 Inserir um novo proprietário
 */
 Delimiter //
-
+Create Procedure InsertProprietario(nome Varchar(254), cpf Varchar(11), endereco Varchar(254), telefone Varchar(20))
+Begin
+	insert into Proprietarios (nome, cpf, endereco, telefone) values (nome, cpf, endereco, telefone);
+End;
 // Delimiter ;
 /*
 Atualizar informações de um proprietário
 */
 Delimiter //
-
+Create Procedure UpdateProprietario(proprietario_id int, nome Varchar(254), cpf Varchar(11), endereco Varchar(254), telefone Varchar(20))
+Begin
+	update Proprietarios set nome = nome, cpf = cpf, endereco = endereco, telefone = telefone where id = proprietario_id;
+End;
 // Delimiter ;
 /*
 Deletar um proprietário
 */
 Delimiter //
-
+Create Procedure DeleteProprietario(proprietario_id int)
+Begin
+	delete from Proprietarios where id = proprietario_id;
+End;
 // Delimiter ;
 /*
 Selecionar todos os proprietários
 */
 Delimiter //
-
+Create Procedure SelectProprietarios()
+Begin
+	select * from Proprietarios;
+End;
 // Delimiter ;
 /*
 Inserir uma nova infração
 */
 Delimiter //
-
+Create Procedure InsertInfracao(descricao Varchar(254), gravidade Varchar(11), data_ocorrencia date, veiculo_id int)
+Begin
+	insert into Infracoes (descricao, gravidade, data_ocorrencia, veiculo_id) values (descricao, gravidade, data_ocorrencia, veiculo_id);
+End;
 // Delimiter ;
 /*
 Atualizar informações de uma infração
 */
 Delimiter //
-
+Create Procedure UpdateInfracao(Infracao_id int, descricao Varchar(254), gravidade Varchar(11), data_ocorrencia date, veiculo_id int)
+Begin
+	update Infracoes set descricao = descricao, gravidade = gravidade, data_ocorrencia = data_ocorrencia, veiculo_id = veiculo_id where id = Infracao_id;
+End;
 // Delimiter ;
 /*
 Deletar uma infração
 */
 Delimiter //
-
+Create Procedure DeleteInfracao(Infracao_id int)
+Begin
+	delete from Infracoes where id = Infracao_id;
+End;
 // Delimiter ;
 /*
 Selecionar todas as infrações
 */
 Delimiter //
-
+Create Procedure SelectInfracoes()
+Begin
+	select * from Infracoes;
+End;
 // Delimiter ;
 /*
 Inserir um novo licenciamento
 */
 Delimiter //
-
+Create Procedure InsertLicenciamento (data_validade date, veiculo_id int)
+Begin
+    INSERT INTO Licenciamentos (data_validade, veiculo_id) VALUES (data_validade, veiculo_id);
+End;
 // Delimiter ;
 /*
 Atualizar informações de um licenciamento
 */
+Delimiter //
+Create Procedure UpdateLicenciamento (licenciamento_id int, data_validade date, veiculo_id int)
+Begin
+    Update Licenciamentos set data_validade = data_validade, veiculo_id = veiculo_id where id = licenciamento_id;
+End;
+// Delimiter ;
